@@ -52,7 +52,6 @@ public class UsuarioServlet extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        // Redirige al usuario al formulario si intenta acceder por GET.
         response.sendRedirect(request.getContextPath() + "/index.html");
     }
 

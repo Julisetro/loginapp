@@ -34,8 +34,8 @@
             </thead>
             <tbody>
                 <%--
-                    1. Obtenemos la lista de usuarios del 'application scope' (ServletContext).
-                    2. Hacemos un cast al tipo de dato correcto (List<Usuario>).
+                    Obtenemos la lista de usuarios del 'application scope' (ServletContext).
+                    Hacemos un cast al tipo de dato correcto (List<Usuario>).
                 --%>
                 <%
                     List<Usuario> usuarios = (List<Usuario>) application.getAttribute("listaUsuarios");
