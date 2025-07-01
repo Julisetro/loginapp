@@ -1,87 +1,90 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/JSP_Servlet/Servlet.java to edit this template
- */
 package com.mycompany.controlador;
 
-import java.io.IOException;
-import java.io.PrintWriter;
-import jakarta.servlet.ServletException;
+import jakarta.servlet.*;
 import jakarta.servlet.annotation.WebServlet;
-import jakarta.servlet.http.HttpServlet;
-import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.*;
+import java.io.IOException;
+import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
- *
- * @author Julian
+ * Servlet para gestionar el registro de usuarios.
+ * Utiliza el ServletContext para almacenar la lista de usuarios en memoria (caché),
+ * para que los datos sean compartidos por toda la aplicación.
  */
 @WebServlet(name = "UsuarioServlet", urlPatterns = {"/login"})
 public class UsuarioServlet extends HttpServlet {
 
     /**
-     * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
-     * methods.
-     *
-     * @param request servlet request
-     * @param response servlet response
-     * @throws ServletException if a servlet-specific error occurs
-     * @throws IOException if an I/O error occurs
+     * Clase interna estática para representar a un Usuario.
      */
-    protected void processRequest(HttpServletRequest request, HttpServletResponse response)
-            throws ServletException, IOException {
-        response.setContentType("text/html;charset=UTF-8");
-        try (PrintWriter out = response.getWriter()) {
-            /* TODO output your page here. You may use following sample code. */
-            out.println("<!DOCTYPE html>");
-            out.println("<html>");
-            out.println("<head>");
-            out.println("<title>Servlet UsuarioServlet</title>");
-            out.println("</head>");
-            out.println("<body>");
-            out.println("<h1>Servlet UsuarioServlet at " + request.getContextPath() + "</h1>");
-            out.println("</body>");
-            out.println("</html>");
+    public static class Usuario implements Serializable {
+        private static final long serialVersionUID = 1L;
+        private final String nombre;
+        private final String email;
+
+        public Usuario(String nombre, String email) {
+            this.nombre = nombre;
+            this.email = email;
         }
+
+        public String getNombre() { return nombre; }
+        public String getEmail() { return email; }
     }
 
-    // <editor-fold defaultstate="collapsed" desc="HttpServlet methods. Click on the + sign on the left to edit the code.">
     /**
-     * Handles the HTTP <code>GET</code> method.
-     *
-     * @param request servlet request
-     * @param response servlet response
-     * @throws ServletException if a servlet-specific error occurs
-     * @throws IOException if an I/O error occurs
+     * Se ejecuta una sola vez al inicializar el servlet.
+     * Crea la lista de usuarios y la guarda en el ServletContext.
+     */
+    @Override
+    public void init() throws ServletException {
+        // Se crea una lista que actuará como "base de datos" en memoria.
+        List<Usuario> usuarios = new ArrayList<>();
+        // Se guarda en el context de la aplicación para que sea accesible globalmente.
+        getServletContext().setAttribute("listaUsuarios", usuarios);
+    }
+
+    /**
+     * Maneja las peticiones GET.
+     * Redirige al formulario de registro para evitar URLs directas al servlet.
      */
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        processRequest(request, response);
+        // Redirige al usuario al formulario si intenta acceder por GET.
+        response.sendRedirect(request.getContextPath() + "/index.html");
     }
 
     /**
-     * Handles the HTTP <code>POST</code> method.
-     *
-     * @param request servlet request
-     * @param response servlet response
-     * @throws ServletException if a servlet-specific error occurs
-     * @throws IOException if an I/O error occurs
+     * Maneja las peticiones POST del formulario de registro.
      */
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        processRequest(request, response);
+        // Obtener los datos del formulario.
+        String nombre = request.getParameter("nombre");
+        String email = request.getParameter("email");
+        // La contraseña se recibe pero no se almacena para este ejercicio
+
+        // Crear el objeto Usuario.
+        Usuario nuevoUsuario = new Usuario(nombre, email);
+
+        // Obtener la lista del ServletContext de forma segura.
+        ServletContext context = getServletContext();
+        List<Usuario> listaUsuarios = (List<Usuario>) context.getAttribute("listaUsuarios");
+
+        // Sincronizar el acceso a la lista para evitar problemas de concurrencia.
+        synchronized (listaUsuarios) {
+            listaUsuarios.add(nuevoUsuario);
+        }
+
+        // Redirigir a la página de visualización (Patrón Post-Redirect-Get).
+        response.sendRedirect(request.getContextPath() + "/listarUsuarios.jsp");
     }
 
-    /**
-     * Returns a short description of the servlet.
-     *
-     * @return a String containing servlet description
-     */
     @Override
     public String getServletInfo() {
-        return "Short description";
-    }// </editor-fold>
-
+        return "Servlet para registrar usuarios y almacenarlos en caché.";
+    }
 }
