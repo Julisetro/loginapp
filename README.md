@@ -1,4 +1,4 @@
-# LoginApp
+# Módulos de software codificados y probados
 
 `LoginApp` es una aplicación web sencilla desarrollada como parte de la actividad de aprendizaje **GA7-220501096-AA2-EV02: Módulos de software codificados y probados**.
 
@@ -22,7 +22,7 @@ El objetivo principal de este ejercicio es demostrar el manejo de un formulario 
 
 1.  Clona o descarga este repositorio.
 2.  Abre el proyecto en tu IDE de Java preferido (como NetBeans, IntelliJ IDEA o Eclipse).
-3.  Asegúrate de que las dependencias de Maven se descarguen correctamente (el proyecto usa `jakarta.jakartaee-api`).
+3.  Asegúrate de que las dependencias de Maven se descarguen correctamente (el proyecto usa `apache-tomcat-10.1.42`).
 4.  Construye el proyecto para generar el archivo `.war`.
-5.  Despliega el archivo `.war` en un servidor de aplicaciones web como Apache Tomcat.
+5.  Despliega el archivo `.war` en el servidor de aplicaciones Apache Tomcat.
 6.  Accede a la aplicación en tu navegador, generalmente en la URL: `http://localhost:8080/LoginApp/`.
